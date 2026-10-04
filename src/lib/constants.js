@@ -1,13 +1,15 @@
 export const SITE_CONFIG = {
-  name: "SubhChandra Education",
+  name: process.env.NEXT_PUBLIC_APP_NAME || "SubhChandra Education",
   tagline: "Right course. Right career.",
   description:
     "Empowering students and parents with honest guidance for online & regular degree programs, scholarships, and Bihar Student Credit Card financial aid.",
-  phone: "+91 88008 85175",
-  altPhone: "+91 91559 99988",
-  email: "admissions@subhchandra.com",
-  whatsappNumber: "918800885175",
-  address: "Head Office: E-211, Road No 2, Backside of Ruban Hospital, Patliputra Colony, Patna, Bihar - 800013",
+  phone: process.env.NEXT_PUBLIC_PHONE_PRIMARY || "+91 88008 85175",
+  altPhone: process.env.NEXT_PUBLIC_PHONE_SECONDARY || "+91 91559 99988",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "admissions@subhchandra.com",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918800885175",
+  address:
+    process.env.NEXT_PUBLIC_OFFICE_ADDRESS ||
+    "Head Office: E-211, Road No 2, Backside of Ruban Hospital, Patliputra Colony, Patna, Bihar - 800013",
   hours: "Mon - Sat: 9:30 AM - 7:00 PM (IST)",
 };
 
