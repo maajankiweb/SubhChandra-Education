@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #071518;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #ffffff;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 20%, #0f3d42 0%, #071518 70%);
+      }
+
+      /* Ambient Background Glows */
+      .glow-orb-1 {
+        position: absolute;
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0,0,0,0) 70%);
+        top: -200px;
+        left: -100px;
+        pointer-events: none;
+      }
+      .glow-orb-2 {
+        position: absolute;
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(0,0,0,0) 70%);
+        bottom: -200px;
+        right: -100px;
+        pointer-events: none;
+      }
+
+      /* Shared Clip Container */
+      .clip {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px;
+      }
+
+      /* Badges & Pills */
+      .badge-award {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 24px;
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: 9999px;
+        color: #fbbf24;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+      .badge-ai {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 20px;
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.5);
+        border-radius: 9999px;
+        color: #34d399;
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      /* Typography */
+      .hero-tagline {
+        font-size: 42px;
+        font-weight: 500;
+        color: #94a3b8;
+        margin-bottom: 12px;
+      }
+      .hero-title {
+        font-size: 78px;
+        font-weight: 900;
+        line-height: 1.1;
+        text-align: center;
+        letter-spacing: -0.02em;
+        max-width: 1400px;
+        background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .brand-title {
+        font-size: 88px;
+        font-weight: 950;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .brand-subh {
+        color: #10b981;
+      }
+      .brand-edu {
+        color: #ef4444;
+        font-size: 64px;
+        margin-top: 4px;
+      }
+
+      /* Cards & Surfaces */
+      .glass-card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 28px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Scene 2 Finder Mockup */
+      .finder-window {
+        width: 1300px;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .finder-searchbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 20px 28px;
+        font-size: 26px;
+        color: #f8fafc;
+        font-weight: 500;
+      }
+      .finder-stages {
+        display: flex;
+        gap: 16px;
+      }
+      .finder-stage-pill {
+        padding: 10px 22px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        font-size: 18px;
+        font-weight: 600;
+        color: #cbd5e1;
+      }
+      .finder-stage-pill.active {
+        background: #0f766e;
+        border-color: #14b8a6;
+        color: #ffffff;
+      }
+      .finder-results {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .college-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .college-name {
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+      }
+      .college-meta {
+        font-size: 16px;
+        color: #94a3b8;
+      }
+      .college-tag {
+        align-self: flex-start;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 8px;
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+      }
+
+      /* Scene 3 Placements */
+      .placements-container {
+        width: 1400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
+      .stats-bar {
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        width: 100%;
+      }
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .stat-val {
+        font-size: 64px;
+        font-weight: 900;
+        color: #fbbf24;
+        line-height: 1;
+      }
+      .stat-lbl {
+        font-size: 20px;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-top: 8px;
+      }
+      .students-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        width: 100%;
+      }
+      .student-card {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+        padding: 24px 32px;
+      }
+      .student-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #10b981;
+      }
+      .student-name {
+        font-size: 26px;
+        font-weight: 800;
+        color: #ffffff;
+      }
+      .student-role {
+        font-size: 18px;
+        color: #94a3b8;
+      }
+      .student-pkg {
+        font-size: 24px;
+        font-weight: 900;
+        color: #10b981;
+        margin-top: 4px;
+      }
+
+      /* Scene 4 MNSSBY */
+      .mnssby-container {
+        width: 1300px;
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+      }
+      .mnssby-points {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        width: 100%;
+        margin-top: 20px;
+      }
+      .mnssby-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 30px 24px;
+        text-align: center;
+      }
+      .mnssby-box-val {
+        font-size: 38px;
+        font-weight: 900;
+        color: #38bdf8;
+      }
+      .mnssby-box-lbl {
+        font-size: 18px;
+        color: #cbd5e1;
+        margin-top: 8px;
+        line-height: 1.4;
+      }
+
+      /* Scene 5 Outro */
+      .outro-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 24px;
+      }
+      .outro-contact {
+        display: flex;
+        gap: 40px;
+        margin-top: 20px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #fbbf24;
+      }
+      .outro-web {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffffff;
+        background: #0f766e;
+        padding: 14px 40px;
+        border-radius: 9999px;
+        margin-top: 10px;
+        border: 1px solid #14b8a6;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="20"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Audio Track -->
+      <audio
+        id="bgm"
+        src="assets/music.mp3"
+        data-start="0"
+        data-duration="20"
+        data-volume="0.45"
+        data-fade-in="0.4"
+        data-fade-out="1.5"
+      ></audio>
+
+      <!-- Background Glows -->
+      <div class="glow-orb-1"></div>
+      <div class="glow-orb-2"></div>
+
+      <!-- ================= SCENE 1: THE HOOK (0s - 3.5s) ================= -->
+      <div id="scene1" class="clip" data-start="0" data-duration="3.5">
+        <div class="badge-award" id="s1-badge">
+          <span>🏆 Awarded by Govt. of Bihar for Educational Excellence</span>
+        </div>
+        <div class="hero-tagline" id="s1-tagline">
+          Admissions Made Transparent & Simple
+        </div>
+        <h1 class="hero-title" id="s1-title">
+          Choosing the right college<br />
+          shouldn't feel like a gamble.
+        </h1>
+      </div>
+
+      <!-- ================= SCENE 2: AI COLLEGE FINDER (3.5s - 8.5s) ================= -->
+      <div id="scene2" class="clip" data-start="3.5" data-duration="5.0">
+        <div class="glass-card finder-window" id="s2-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="badge-ai">⚡ AI-Powered College Finder</div>
+            <div style="color: #94a3b8; font-size: 18px; font-weight: 600;">Over 45+ Verified Universities</div>
+          </div>
+
+          <div class="finder-searchbar" id="s2-search">
+            <span style="color: #10b981;">🔍</span>
+            <span id="s2-searchtext">B.Tech Computer Science with 100% Credit Card Aid</span>
+          </div>
+
+          <div class="finder-stages" id="s2-stages">
+            <div class="finder-stage-pill">Class 10th</div>
+            <div class="finder-stage-pill active">Class 12th & UG</div>
+            <div class="finder-stage-pill">Postgraduate (PG)</div>
+            <div class="finder-stage-pill">Healthcare & Diploma</div>
+          </div>
+
+          <div class="finder-results" id="s2-results">
+            <div class="college-card">
+              <span class="college-tag">NAAC A+ Accredited</span>
+              <div class="college-name">Marwadi University</div>
+              <div class="college-meta">100% Verified Placements • ₹42 LPA Top Recruiter</div>
+            </div>
+            <div class="college-card">
+              <span class="college-tag">Top Ranked</span>
+              <div class="college-name">Graphic Era Deemed Uni</div>
+              <div class="college-meta">Engineering & Management • Credit Card Accepted</div>
+            </div>
+            <div class="college-card">
+              <span class="college-tag">Estd. 1998</span>
+              <div class="college-name">DIT University</div>
+              <div class="college-meta">Merit Scholarship Up to 100% • Patna Mentorship</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SCENE 3: VERIFIED PLACEMENTS (8.5s - 13.5s) ================= -->
+      <div id="scene3" class="clip" data-start="8.5" data-duration="5.0">
+        <div class="placements-container" id="s3-content">
+          <h2 style="font-size: 54px; font-weight: 900; color: #ffffff;">
+            Real Students. Verified Placements.
+          </h2>
+
+          <div class="stats-bar" id="s3-stats">
+            <div class="stat-item">
+              <div class="stat-val">15,000+</div>
+              <div class="stat-lbl">Students Guided</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val">45+</div>
+              <div class="stat-lbl">Partner Universities</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val">₹42 LPA</div>
+              <div class="stat-lbl">Highest Package</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val">100%</div>
+              <div class="stat-lbl">Verified Admissions</div>
+            </div>
+          </div>
+
+          <div class="students-row" id="s3-students">
+            <div class="glass-card student-card">
+              <img src="assets/student1.webp" alt="Priya Sharma" class="student-img" />
+              <div>
+                <div class="student-name">Priya Sharma</div>
+                <div class="student-role">B.Tech CSE • Placed at Microsoft</div>
+                <div class="student-pkg">₹18.5 LPA Package</div>
+              </div>
+            </div>
+            <div class="glass-card student-card">
+              <img src="assets/student2.webp" alt="Rahul Kumar" class="student-img" />
+              <div>
+                <div class="student-name">Rahul Kumar</div>
+                <div class="student-role">MBA Marketing • Placed at Deloitte</div>
+                <div class="student-pkg">₹12.0 LPA Package</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SCENE 4: BIHAR STUDENT CREDIT CARD (13.5s - 17.0s) ================= -->
+      <div id="scene4" class="clip" data-start="13.5" data-duration="3.5">
+        <div class="glass-card mnssby-container" id="s4-card">
+          <div class="badge-award">Bihar Govt. Initiative</div>
+          <h2 style="font-size: 56px; font-weight: 900; color: #ffffff;">
+            Bihar Student Credit Card (MNSSBY)
+          </h2>
+          <p style="font-size: 24px; color: #94a3b8; max-width: 900px;">
+            Don't let finances hold you back. Complete hassle-free loan documentation and sanction assistance under one roof.
+          </p>
+          <div class="mnssby-points" id="s4-points">
+            <div class="mnssby-box">
+              <div class="mnssby-box-val">Up to ₹4 Lakhs</div>
+              <div class="mnssby-box-lbl">Zero Collateral Higher Education Loan</div>
+            </div>
+            <div class="mnssby-box">
+              <div class="mnssby-box-val">1% Interest</div>
+              <div class="mnssby-box-lbl">Special Concession for Girls & Divyang</div>
+            </div>
+            <div class="mnssby-box">
+              <div class="mnssby-box-val">100% Free</div>
+              <div class="mnssby-box-lbl">Guidance & Approval Tracking</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= SCENE 5: OUTRO (17.0s - 20.0s) ================= -->
+      <div id="scene5" class="clip" data-start="17.0" data-duration="3.0">
+        <div class="outro-box" id="s5-box">
+          <div class="brand-title">
+            <span class="brand-subh">SubhChandra</span>
+            <span class="brand-edu">Education</span>
+          </div>
+          <div style="font-size: 34px; font-weight: 600; color: #cbd5e1; margin-top: 10px;">
+            Right course. Right career. Zero guesswork.
+          </div>
+          <div class="outro-contact">
+            <span>📞 +91 88008 85175</span>
+            <span>📍 Patliputra Colony, Patna</span>
+          </div>
+          <div class="outro-web">
+            subhchandra.com
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline Animation Script -->
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+
+      // ================= SCENE 1 (0s - 3.5s) =================
+      tl.fromTo("#s1-badge", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+      tl.fromTo("#s1-tagline", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.5);
+      tl.fromTo("#s1-title", { opacity: 0, scale: 0.95, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "back.out(1.2)" }, 0.8);
+      tl.to("#scene1", { opacity: 0, scale: 1.05, duration: 0.5, ease: "power2.in" }, 3.0);
+
+      // ================= SCENE 2 (3.5s - 8.5s) =================
+      tl.fromTo("#s2-card", { opacity: 0, y: 40, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power2.out" }, 3.5);
+      tl.fromTo("#s2-search", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 4.0);
+      tl.fromTo(".college-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "back.out(1.2)" }, 4.6);
+      tl.to("#scene2", { opacity: 0, y: -40, duration: 0.5, ease: "power2.in" }, 8.0);
+
+      // ================= SCENE 3 (8.5s - 13.5s) =================
+      tl.fromTo("#s3-content h2", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 8.6);
+      tl.fromTo(".stat-item", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: "back.out(1.3)" }, 9.0);
+      tl.fromTo(".student-card", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.2, ease: "power2.out" }, 9.6);
+      tl.to("#scene3", { opacity: 0, scale: 0.95, duration: 0.5, ease: "power2.in" }, 13.0);
+
+      // ================= SCENE 4 (13.5s - 17.0s) =================
+      tl.fromTo("#s4-card", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 13.5);
+      tl.fromTo(".mnssby-box", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "back.out(1.2)" }, 14.0);
+      tl.to("#scene4", { opacity: 0, y: -30, duration: 0.5, ease: "power2.in" }, 16.5);
+
+      // ================= SCENE 5 (17.0s - 20.0s) =================
+      tl.fromTo("#s5-box", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 17.0);
+      tl.fromTo(".outro-contact", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.6);
+      tl.fromTo(".outro-web", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.2)" }, 18.0);
+
+      tl.seek(0);
+    </script>
+  </body>
+</html>
